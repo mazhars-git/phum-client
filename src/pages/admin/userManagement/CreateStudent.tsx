@@ -6,17 +6,82 @@ import PHSelect from "../../../components/form/PHSelect";
 import { bloodGroupOptions, genderOptions } from "../../../constants/global";
 import PHDatePicker from "../../../components/form/PHDatePicker";
 import { useGetAllSemestersQuery } from "../../../redux/features/academicSemester/academicSemesterApi";
+import { useAddStudentMutation } from "../../../redux/features/admin/userManagement.api";
 
 const studentDummyData = {
+  password: "student222",
   student: {
-    academicDepartment: "id",
+    name: {
+      firstName: "Jamil",
+      middleName: "Hossain",
+      lastName: "Khalid",
+    },
+    gender: "male",
+    email: "jamil@example.com",
+    contactNo: "+35558978",
+    emergencyContact: "+09854321",
+    bloodGroup: "A+",
+    presentAddress: "123 Main Street, Springfield",
+    permanentAddress: "456 Elm Street, Springfield",
+    guardian: {
+      fatherName: "Michael Smith",
+      fatherOccupation: "Engineer",
+      fatherContact: "+1234567891",
+      motherName: "Sarah Smith",
+      motherOccupation: "Teacher",
+      motherContact: "+1234567892",
+    },
+    localGuardian: {
+      name: "Emily Davis",
+      occupation: "Nurse",
+      address: "789 Oak Street, Springfield",
+      contactNo: "+35558978",
+    },
+    admissionSemester: "676ffeb9eb6ebcec3fc12f9f",
+    academicDepartment: "676ffe14eb6ebcec3fc12f9d",
   },
 };
 
-const studentDafaultValues = {};
+const studentDefaultValues = {
+  name: {
+    firstName: "Jamil",
+    middleName: "Hossain",
+    lastName: "Khalid",
+  },
+  gender: "male",
+  email: "jamil@example.com",
+  contactNo: "+35558978",
+  emergencyContact: "+09854321",
+  bloodGroup: "A+",
+  presentAddress: "123 Main Street, Springfield",
+  permanentAddress: "456 Elm Street, Springfield",
+  guardian: {
+    fatherName: "Michael Smith",
+    fatherOccupation: "Engineer",
+    fatherContact: "+1234567891",
+    motherName: "Sarah Smith",
+    motherOccupation: "Teacher",
+    motherContact: "+1234567892",
+  },
+  localGuardian: {
+    name: "Emily Davis",
+    occupation: "Nurse",
+    address: "789 Oak Street, Springfield",
+    contactNo: "+35558978",
+  },
+  admissionSemester: "676ffeb9eb6ebcec3fc12f9f",
+  academicDepartment: "676ffe14eb6ebcec3fc12f9d",
+};
 
 const CreateStudent = () => {
+  const [addStudent, { data, error }] = useAddStudentMutation();
+
+  console.log({ data, error });
+
   const { data: sData, isLoading: sIsLoading } =
+    useGetAllSemestersQuery(undefined);
+
+  const { data: dData, isLoading: dIsLoading } =
     useGetAllSemestersQuery(undefined);
 
   const semesterOptions = sData?.data?.map((item) => ({
@@ -24,16 +89,28 @@ const CreateStudent = () => {
     label: `${item.name} ${item.year}`,
   }));
 
-  const onSubmit: SubmitHandler<FieldValues> = (data) => {
-    console.log(data);
+  const departmentOptions = dData?.data?.map((item) => ({
+    value: item._id,
+    label: item.name,
+  }));
 
-    // const formData = new FormData();
-    // formData.append("data", JSON.stringify(data));
+  const onSubmit: SubmitHandler<FieldValues> = (data) => {
+    const studentData = {
+      password: "student123",
+      student: data,
+    };
+    const formData = new FormData();
+    formData.append("data", JSON.stringify(studentData));
+
+    addStudent(formData);
+
+    console.log(Object.fromEntries(formData));
   };
+
   return (
-    <Row>
+    <Row justify="center">
       <Col span={24}>
-        <PHForm onSubmit={onSubmit}>
+        <PHForm onSubmit={onSubmit} defaultValues={studentDefaultValues}>
           <Row gutter={8}>
             <Col span={24} md={{ span: 12 }} lg={{ span: 8 }}>
               <PHInput type="text" name="name.firstName" label="First Name" />
@@ -97,36 +174,44 @@ const CreateStudent = () => {
           <Divider>Guardian Info</Divider>
           <Row gutter={8}>
             <Col span={24} md={{ span: 12 }} lg={{ span: 8 }}>
-              <PHInput type="text" name="fatherName" label="Father Name" />
+              <PHInput
+                type="text"
+                name="guardian.fatherName"
+                label="Father Name"
+              />
             </Col>
             <Col span={24} md={{ span: 12 }} lg={{ span: 8 }}>
               <PHInput
                 type="text"
-                name="fatherOccupation"
+                name="guardian.fatherOccupation"
                 label="Father Occupation"
               />
             </Col>
             <Col span={24} md={{ span: 12 }} lg={{ span: 8 }}>
               <PHInput
                 type="text"
-                name="fatherContact"
+                name="guardian.fatherContact"
                 label="Father Contact No"
               />
             </Col>
             <Col span={24} md={{ span: 12 }} lg={{ span: 8 }}>
-              <PHInput type="text" name="motherName" label="Mother Name" />
+              <PHInput
+                type="text"
+                name="guardian.motherName"
+                label="Mother Name"
+              />
             </Col>
             <Col span={24} md={{ span: 12 }} lg={{ span: 8 }}>
               <PHInput
                 type="text"
-                name="motherOccupation"
+                name="guardian.motherOccupation"
                 label="Mother Occupation"
               />
             </Col>
             <Col span={24} md={{ span: 12 }} lg={{ span: 8 }}>
               <PHInput
                 type="text"
-                name="motherContact"
+                name="guardian.motherContact"
                 label="Mother Contact No"
               />
             </Col>
@@ -134,13 +219,28 @@ const CreateStudent = () => {
           <Divider>Local Guardian Info</Divider>
           <Row gutter={8}>
             <Col span={24} md={{ span: 12 }} lg={{ span: 8 }}>
-              <PHInput type="text" name="name" label="Name" />
+              <PHInput type="text" name="localGuardian.name" label="Name" />
             </Col>
             <Col span={24} md={{ span: 12 }} lg={{ span: 8 }}>
-              <PHInput type="text" name="occupation" label="Occupation" />
+              <PHInput
+                type="text"
+                name="localGuardian.occupation"
+                label="Occupation"
+              />
             </Col>
             <Col span={24} md={{ span: 12 }} lg={{ span: 8 }}>
-              <PHInput type="text" name="contact" label="Contact No" />
+              <PHInput
+                type="text"
+                name="localGuardian.contactNo"
+                label="Contact No"
+              />
+            </Col>
+            <Col span={24} md={{ span: 12 }} lg={{ span: 8 }}>
+              <PHInput
+                type="text"
+                name="localGuardian.address"
+                label="Address"
+              />
             </Col>
           </Row>
 
@@ -152,6 +252,14 @@ const CreateStudent = () => {
                 disabled={sIsLoading}
                 name="admissionSemester"
                 label="Admission Semester"
+              />
+            </Col>
+            <Col span={24} md={{ span: 12 }} lg={{ span: 8 }}>
+              <PHSelect
+                options={departmentOptions}
+                disabled={dIsLoading}
+                name="academicDepartment"
+                label="Academic Department"
               />
             </Col>
           </Row>
