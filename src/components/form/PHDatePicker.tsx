@@ -2,7 +2,6 @@ import { DatePicker, Form } from "antd";
 import { Controller } from "react-hook-form";
 
 type TDatePickerProps = {
-  type: string;
   name: string;
   label?: string;
 };

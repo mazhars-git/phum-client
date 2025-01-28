@@ -127,11 +127,7 @@ const CreateStudent = () => {
               <PHSelect options={genderOptions} name="gender" label="Gender" />
             </Col>
             <Col span={24} md={{ span: 12 }} lg={{ span: 8 }}>
-              <PHDatePicker
-                type="text"
-                name="dateOfBirth"
-                label="Date of Birth"
-              />
+              <PHDatePicker name="dateOfBirth" label="Date of Birth" />
             </Col>
             <Col span={24} md={{ span: 12 }} lg={{ span: 8 }}>
               <PHSelect
