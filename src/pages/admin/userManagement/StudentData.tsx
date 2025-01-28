@@ -1,25 +1,48 @@
-import { Button, Space, Table, TableColumnsType, TableProps } from "antd";
+import {
+  Button,
+  Pagination,
+  Space,
+  Table,
+  TableColumnsType,
+  TableProps,
+} from "antd";
 import { useState } from "react";
 import { TQueryParam, TStudent } from "../../../types";
 import { useGetAllStudentsQuery } from "../../../redux/features/admin/userManagement.api";
+import { Link } from "react-router-dom";
 
-export type TTableData = Pick<TStudent, "_id" | "fullName">;
+export type TTableData = Pick<
+  TStudent,
+  "fullName" | "id" | "email" | "contactNo"
+>;
 
 const StudentData = () => {
-  const [params, setParams] = useState<TQueryParam[] | undefined>(undefined);
+  const [params, setParams] = useState<TQueryParam[]>([]);
+  const [page, setPage] = useState(1);
   const {
     data: studentData,
     isLoading,
     isFetching,
-  } = useGetAllStudentsQuery(params);
+  } = useGetAllStudentsQuery([
+    // { name: "limit", value: 3 },
+    { name: "page", value: page },
+    { name: "sort", value: "id" },
+    ...params,
+  ]);
   // console.log(studentData);
   console.log({ isLoading, isFetching });
 
-  const tableData = studentData?.data?.map(({ _id, fullName, id }: any) => ({
-    key: _id,
-    fullName,
-    id,
-  }));
+  const metaData = studentData?.meta;
+
+  const tableData = studentData?.data?.map(
+    ({ _id, fullName, id, email, contactNo }: any) => ({
+      key: _id,
+      fullName,
+      id,
+      email,
+      contactNo,
+    })
+  );
 
   const columns: TableColumnsType<TTableData> = [
     {
@@ -33,13 +56,26 @@ const StudentData = () => {
       dataIndex: "id",
     },
     {
+      title: "Email",
+      key: "email",
+      dataIndex: "email",
+    },
+    {
+      title: "Contact No.",
+      key: "contactNo",
+      dataIndex: "contactNo",
+    },
+    {
       title: "Action",
       key: "x",
-      render: () => {
+      render: (item) => {
+        console.log(item);
         return (
           <Space>
+            <Link to={`/admin/student-data/${item.key}`}>
+              <Button>Details</Button>
+            </Link>
             <Button>Update</Button>
-            <Button>Details</Button>
             <Button>Block</Button>
           </Space>
         );
@@ -72,12 +108,21 @@ const StudentData = () => {
   }
 
   return (
-    <Table<TTableData>
-      loading={isFetching}
-      columns={columns}
-      dataSource={tableData}
-      onChange={onChange}
-    />
+    <>
+      <Table
+        loading={isFetching}
+        columns={columns}
+        dataSource={tableData}
+        onChange={onChange}
+        pagination={false}
+      />
+      <Pagination
+        current={page}
+        onChange={(value) => setPage(value)}
+        pageSize={metaData?.limit}
+        total={metaData?.total}
+      />
+    </>
   );
 };
 
