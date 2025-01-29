@@ -33,6 +33,7 @@ const SemesterRegistration = () => {
 
     try {
       const res = (await addSemester(semesterData)) as TResponse<any>;
+      console.log(res);
       if (res.error) {
         toast.error(res.error.data.message, { id: toastId });
       } else {

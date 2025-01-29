@@ -10,9 +10,18 @@ import { useState } from "react";
 export type TTableData = Pick<TSemester, "startDate" | "endDate" | "status">;
 
 const items = [
-  { label: "Upcoming", key: "UPCOMING" },
-  { label: "Ongoing", key: "ONGOING" },
-  { label: "Ended", key: "ENDED" },
+  {
+    label: "Upcoming",
+    key: "UPCOMING",
+  },
+  {
+    label: "Ongoing",
+    key: "ONGOING",
+  },
+  {
+    label: "Ended",
+    key: "ENDED",
+  },
 ];
 
 const RegisteredSemesters = () => {
@@ -26,7 +35,7 @@ const RegisteredSemesters = () => {
   const [updateSemesterStatus] = useUpdateRegisteredSemesterMutation();
 
   const tableData = semesterData?.data?.map(
-    ({ _id, academicSemester, startDate, endDate, status }: any) => ({
+    ({ _id, academicSemester, startDate, endDate, status }) => ({
       key: _id,
       name: `${academicSemester.name} ${academicSemester.year}`,
       startDate: moment(new Date(startDate)).format("MMMM"),
@@ -35,10 +44,7 @@ const RegisteredSemesters = () => {
     })
   );
 
-  const handleStatusDropdown = (data) => {
-    console.log("semester", semesterId);
-    console.log("newStatus", data.key);
-
+  const handleStatusUpdate = (data) => {
     const updateData = {
       id: semesterId,
       data: {
@@ -49,7 +55,10 @@ const RegisteredSemesters = () => {
     updateSemesterStatus(updateData);
   };
 
-  const menuProps = { items, onClick: handleStatusDropdown };
+  const menuProps = {
+    items,
+    onClick: handleStatusUpdate,
+  };
 
   const columns: TableColumnsType<TTableData> = [
     {
