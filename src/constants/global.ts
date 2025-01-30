@@ -13,6 +13,16 @@ export const monthNames = [
   "December",
 ];
 
+export const weekDaysOptions = [
+  "Sat",
+  "Sun",
+  "Mon",
+  "Tue",
+  "Wed",
+  "Thu",
+  "Fri",
+];
+
 export const genders = ["Male", "Female", "Other"];
 
 export const bloodGroups = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
